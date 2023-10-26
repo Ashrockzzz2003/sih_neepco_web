@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
-import { All_PROCUREMENTS_URL, NEW_VENDOR_URL } from "../utils/constants";
+import { NEW_VENDOR_URL } from "../utils/constants";
 import { useRouter } from "next/navigation";
 import 'material-icons/iconfont/material-icons.css';
 import Aos from "aos";
@@ -43,7 +43,6 @@ export default function AdminDashboardScreen() {
     useEffect(() => {
         setUserAccess(secureLocalStorage.getItem("jaiGanesh"));
         setUserName(secureLocalStorage.getItem("userName"));
-
 
         if (secureLocalStorage.getItem("jaiGanesh") === null || secureLocalStorage.getItem("jaiGanesh") === undefined || secureLocalStorage.getItem("jaiGanesh").length === 0) {
             secureLocalStorage.clear();
@@ -255,7 +254,7 @@ export default function AdminDashboardScreen() {
                                     <h1 className="px-4 pt-2 text-[#1d0e3a] text-center text-xl">Procurements</h1>
                                     <hr className="w-full border-[#1d0e3a] my-2" />
                                     <div className="px-4 py-4 flex flex-wrap space-x-2 justify-center items-center">
-                                        <Link className="hover:cursor-pointer" href="/A">
+                                        <Link className="hover:cursor-pointer" href="/A/procurements">
                                             <div className="bg-yellow-100 text-[#544a15] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-opacity-80">
                                                 <span className="material-icons mr-2">work</span>
                                                 {"All Procurements"}

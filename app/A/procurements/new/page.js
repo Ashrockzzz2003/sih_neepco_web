@@ -57,6 +57,8 @@ export default function CreateNewProcurementScreen() {
     const router = useRouter();
 
     useEffect(() => {
+        setUserAccess(secureLocalStorage.getItem("jaiGanesh"));
+
         fetch(ALL_VENDOR_URL, {
             method: "GET",
             headers: {
