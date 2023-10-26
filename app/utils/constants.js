@@ -38,3 +38,7 @@ export function RoleToRoleID(role) {
 const BASE_URL = 'http://localhost:5000/api';
 export const LOGIN_URL = `${BASE_URL}/login`;
 export const REGISTER_URL = `${BASE_URL}/register`;
+export const All_PROCUREMENTS_URL = `${BASE_URL}/getAllProcurements`;
+export const ALL_VENDOR_URL = `${BASE_URL}/getVendors`;
+export const CREATE_PROCUREMENT_URL = `${BASE_URL}/createProcurement`;
+export const NEW_VENDOR_URL = `${BASE_URL}/newVendor`;

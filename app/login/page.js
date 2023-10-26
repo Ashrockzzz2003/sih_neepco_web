@@ -8,7 +8,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import DialogScreen from "../utils/DialogScreen";
 import { LoadingScreen } from '../utils/LoadingScreen';
-import { LOGIN_URL } from '../utils/constants';
+import { LOGIN_URL, RoleToRoleID } from '../utils/constants';
+import secureLocalStorage from 'react-secure-storage';
+import { useRouter } from 'next/navigation';
 
 export default function LoginScreen() {
     const [userEmail, setUserEmail] = useState('');
@@ -35,6 +37,8 @@ export default function LoginScreen() {
     function openModal() {
         setIsOpen(true)
     }
+
+    const router = useRouter();
 
     const handeLogin = async (e) => {
         e.preventDefault();
@@ -64,8 +68,40 @@ export default function LoginScreen() {
                 setTitle('Success');
                 setMessage('Login Successful! Click Okay to continue.');
                 setButtonText('Okay');
-                openModal();
                 setType('1');
+                openModal();
+
+                const userRole = RoleToRoleID(data['userRole']);
+
+                secureLocalStorage.setItem('authorization_tier', userRole);
+                secureLocalStorage.setItem('jaiGanesh', data['SECRET_TOKEN']);
+                secureLocalStorage.setItem('userEmail', data['userEmail']);
+                secureLocalStorage.setItem('userName', data['userName']);
+
+                switch (userRole) {
+                    case 0:
+                        // ADMIN
+                        router.replace('/A');
+                        break;
+                    case 1:
+                        // BUYER
+                        router.replace('/B');
+                        break;
+                    case 2:
+                        // CONSIGNEE
+                        router.replace('/C');
+                        break;
+                    case 3:
+                        // PAYMENT AUTHORITY
+                        router.replace('/P');
+                        break;
+                    case 4:
+                        // VENDOR
+                        router.replace('/V');
+                        break;
+                    default:
+                        break;
+                }
             }
             else if (response.status === 201) {
 
