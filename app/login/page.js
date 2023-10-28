@@ -95,10 +95,6 @@ export default function LoginScreen() {
                         // PAYMENT AUTHORITY
                         router.replace('/P');
                         break;
-                    case 4:
-                        // VENDOR
-                        router.replace('/V');
-                        break;
                     default:
                         break;
                 }
