@@ -6,7 +6,7 @@ import secureLocalStorage from "react-secure-storage";
 import { LoadingScreen } from "../../utils/LoadingScreen";
 import Link from "next/link";
 import Image from "next/image";
-import { All_PROCUREMENTS_URL } from "../../utils/constants";
+import { All_PROCUREMENTS_URL, UPLOAD_CRAC_URL, UPLOAD_PRC_URL } from "../../utils/constants";
 import 'material-icons/iconfont/material-icons.css';
 import Aos from "aos";
 import "aos/dist/aos.css";
@@ -15,6 +15,9 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import Searchbar from "../../../components/SearchBar";
 import { SelectButton } from "primereact/selectbutton";
+import { Tooltip, Typography } from "@material-tailwind/react";
+import UploadFileComponents from "../../utils/UploadFile";
+import DialogScreen from "../../utils/DialogScreen";
 
 export default function ProcurementsScreen() {
     const [isLoading, setLoading] = useState(true);
@@ -29,11 +32,11 @@ export default function ProcurementsScreen() {
 
     const [isOpen, setIsOpen] = useState(false);
     function closeModal() {
-        setIsOpen(false)
+        setIsOpen(false);
     }
 
     function openModal() {
-        setIsOpen(true)
+        setIsOpen(true);
     }
 
     const router = useRouter();
@@ -121,6 +124,7 @@ export default function ProcurementsScreen() {
             setProcurementDataFiltered(procurementData.filter((procurement) => {
                 return (
                     ((procurement["goodsType"] !== null && procurement["goodsType"].toLowerCase().includes(searchText.toLowerCase()))
+                        || (procurement["gemID"] !== null && procurement["gemID"].toString().toLowerCase().includes(searchText.toLowerCase()))
                         || (procurement["vendorOrganization"] !== null && procurement["vendorOrganization"].toLowerCase().includes(searchText.toLowerCase()))
                         || (procurement["Buyer"] !== null && procurement["Buyer"].toLowerCase().includes(searchText.toLowerCase()))
                         || (procurement["Consignee"] !== null && procurement["Consignee"].toLowerCase().includes(searchText.toLowerCase()))
@@ -134,6 +138,155 @@ export default function ProcurementsScreen() {
             }));
         }
     }, [searchText, procurementData, vendorSelection, isMSME, isWomenOwned, isSCST, status]);
+
+    const [uploadModalIsOpen, setUploadModalIsOpen] = useState(false);
+    function closeUploadModal() {
+        setUploadModalIsOpen(false);
+    }
+
+    function openUploadModal() {
+        setUploadModalIsOpen(true);
+    }
+
+    const [selectedProcurement, setSelectedProcurement] = useState(null);
+
+    const uploadPRC = (e, file) => {
+        const formData = new FormData();
+        formData.append("prc", file);
+
+        fetch(UPLOAD_PRC_URL, {
+            "headers": {
+                "Authorization": "Bearer " + secureLocalStorage.getItem("jaiGanesh") + ` ${selectedProcurement}`,
+            },
+            "body": formData,
+            method: "POST"
+        }).then((response) => {
+            if (response.status === 200) {
+                setTitle('Success');
+                setMessage('PRC uploaded successfully!');
+                setButtonText('Okay');
+                setType('1');
+                openModal();
+
+                fetch(All_PROCUREMENTS_URL, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + secureLocalStorage.getItem("jaiGanesh"),
+                    }
+                }).then((res) => {
+                    if (res.status === 200) {
+                        res.json().then((data) => {
+                            setProcurementData(data["procurements"]);
+                            setProcurementDataFiltered(data["procurements"]);
+                        })
+                    }
+                    else if (response.status === 401) {
+                        secureLocalStorage.clear();
+                        setTitle('Unauthorized');
+                        setMessage('Session expired. Please login again!');
+                        setButtonText('Okay');
+                        setType('0');
+                        openModal();
+
+                        setTimeout(() => {
+                            router.replace('/login');
+                        }, 3000);
+                    } else if (response.status === 500) {
+                        setTitle('Oops');
+                        setMessage('Something went wrong! Please try again later!');
+                        setButtonText('Okay');
+                        setType('0');
+                        openModal();
+                    } else {
+                        setTitle('Oops');
+                        setMessage('Something went wrong! Please try again later!');
+                        setButtonText('Okay');
+                        setType('0');
+                        openModal();
+                    }
+                }).catch((err) => {
+                    setTitle('Oops');
+                    setMessage('Something went wrong! Please try again later!');
+                    setButtonText('Okay');
+                    setType('0');
+                    openModal();
+                }).finally(() => {
+                    setLoading(false);
+                });
+            }
+        });
+    }
+
+    const uploadCRAC = (e, file) => {
+        const formData = new FormData();
+        formData.append("crac", file);
+
+        fetch(UPLOAD_CRAC_URL, {
+            "headers": {
+                "Authorization": "Bearer " + secureLocalStorage.getItem("jaiGanesh") + ` ${selectedProcurement}`,
+            },
+            "body": formData,
+            method: "POST"
+        }).then((response) => {
+            if (response.status === 200) {
+                setTitle('Success');
+                setMessage('CRAC uploaded successfully!');
+                setButtonText('Okay');
+                setType('1');
+                openModal();
+
+                fetch(All_PROCUREMENTS_URL, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + secureLocalStorage.getItem("jaiGanesh"),
+                    }
+                }).then((res) => {
+                    if (res.status === 200) {
+                        res.json().then((data) => {
+                            setProcurementData(data["procurements"]);
+                            setProcurementDataFiltered(data["procurements"]);
+                        })
+                    }
+                    else if (response.status === 401) {
+                        secureLocalStorage.clear();
+                        setTitle('Unauthorized');
+                        setMessage('Session expired. Please login again!');
+                        setButtonText('Okay');
+                        setType('0');
+                        openModal();
+
+                        setTimeout(() => {
+                            router.replace('/login');
+                        }, 3000);
+                    } else if (response.status === 500) {
+                        setTitle('Oops');
+                        setMessage('Something went wrong! Please try again later!');
+                        setButtonText('Okay');
+                        setType('0');
+                        openModal();
+                    } else {
+                        setTitle('Oops');
+                        setMessage('Something went wrong! Please try again later!');
+                        setButtonText('Okay');
+                        setType('0');
+                        openModal();
+                    }
+                }).catch((err) => {
+                    setTitle('Oops');
+                    setMessage('Something went wrong! Please try again later!');
+                    setButtonText('Okay');
+                    setType('0');
+                    openModal();
+                }).finally(() => {
+                    setLoading(false);
+                });
+            }
+        });
+    }
+
+    const [uploadType, setUploadType] = useState('0');
 
     return <>
         {isLoading ?
@@ -169,44 +322,44 @@ export default function ProcurementsScreen() {
                     </div>
 
                     <div className="flex flex-wrap justify-center items-center">
-                    <div className="text-md bg-white rounded-xl border border-bGray my-16">
-                        <h1 className="text-xl font-bold text-center p-2">Power Search</h1>
-                        <hr className="w-full border-bGray" />
-                        <Searchbar onChange={
-                            (value) => setSearchText(value)
-                        } placeholderText={"Start Typing"} />
+                        <div className="text-md bg-white rounded-xl border border-bGray my-16">
+                            <h1 className="text-xl font-bold text-center p-2">Power Search</h1>
+                            <hr className="w-full border-bGray" />
+                            <Searchbar onChange={
+                                (value) => setSearchText(value)
+                            } placeholderText={"GemID or Goods Type or Official Name ..."} />
 
-                        <div className="flex flex-wrap border-t border-bGray justify-center items-center xl:flex-row space-x-2 space-y-2 p-4">
-                            <div className="border p-4 rounded-md">
-                                <SelectButton value={vendorSelection} onChange={(e) => {
-                                    setVendorSelection(e.value || '');
-                                }} options={vendorSelectionOptions} required />
-                            </div>
-                            <div className="border p-4 rounded-md">
-                                <SelectButton value={isMSME} onChange={(e) => {
-                                    setIsMSME(e.value || '');
-                                }} options={msmeOptions} required />
-                            </div>
-                            <div className="border p-4 rounded-md">
-                                <SelectButton value={isWomenOwned} onChange={(e) => {
-                                    setIsWomenOwned(e.value || '');
-                                }} options={womenOwnedOptions} required />
-                            </div>
-                            <div className="border p-4 rounded-md">
-                                <SelectButton value={isSCST} onChange={(e) => {
-                                    setIsSCST(e.value || '');
-                                }} options={scstOptions} required />
+                            <div className="flex flex-wrap border-t border-bGray justify-center items-center xl:flex-row space-x-2 space-y-2 p-4">
+                                <div className="border p-4 rounded-md">
+                                    <SelectButton value={vendorSelection} onChange={(e) => {
+                                        setVendorSelection(e.value || '');
+                                    }} options={vendorSelectionOptions} required />
+                                </div>
+                                <div className="border p-4 rounded-md">
+                                    <SelectButton value={isMSME} onChange={(e) => {
+                                        setIsMSME(e.value || '');
+                                    }} options={msmeOptions} required />
+                                </div>
+                                <div className="border p-4 rounded-md">
+                                    <SelectButton value={isWomenOwned} onChange={(e) => {
+                                        setIsWomenOwned(e.value || '');
+                                    }} options={womenOwnedOptions} required />
+                                </div>
+                                <div className="border p-4 rounded-md">
+                                    <SelectButton value={isSCST} onChange={(e) => {
+                                        setIsSCST(e.value || '');
+                                    }} options={scstOptions} required />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="flex flex-row flex-wrap justify-center items-center p-4">
-                        <div className="border p-4 py-8 rounded-md">
-                            <SelectButton value={status} onChange={(e) => {
-                                setStatus(e.value || '');
-                            }} options={statusOptions} required />
+                        <div className="flex flex-row flex-wrap justify-center items-center p-4">
+                            <div className="border p-4 py-8 rounded-md">
+                                <SelectButton value={status} onChange={(e) => {
+                                    setStatus(e.value || '');
+                                }} options={statusOptions} required />
+                            </div>
                         </div>
-                    </div>
                     </div>
 
                     <table className="max-w-11/12 ml-auto mr-auto my-4 rounded-2xl backdrop-blur-2xl bg-red-50 bg-opacity-30 text-center text-sm border-black border-separate border-spacing-0 border-solid mt-8">
@@ -237,8 +390,8 @@ export default function ProcurementsScreen() {
                             }, */}
                             <tr>
                                 <th className="px-2 py-4 rounded-tl-2xl border-black text-white">Gem ID</th>
-                                <th className="px-2 py-4 border-black text-white">Goods Type</th>
-                                <th className="px-2 py-4 border-black text-white">Goods Quantity</th>
+                                <th className="px-2 py-4 border-black text-white">CreatedAt</th>
+                                <th className="px-2 py-4 border-black text-white">Goods</th>
                                 <th className="px-2 py-4 border-black text-white">Mode</th>
                                 <th className="px-2 py-4 border-black text-white">Vendor Organization</th>
                                 <th className="px-2 py-4 border-black text-white">Invoice No</th>
@@ -246,9 +399,9 @@ export default function ProcurementsScreen() {
                                 <th className="px-2 py-4 border-black text-white">CRAC</th>
                                 <th className="px-2 py-4 border-black text-white">Payment ID</th>
                                 <th className="px-2 py-4 border-black text-white">Status</th>
-                                <th className="px-2 py-4 border-black text-white">Buyer</th>
+                                {/* <th className="px-2 py-4 border-black text-white">Buyer</th>
                                 <th className="px-2 py-4 border-black text-white">Consignee</th>
-                                <th className="px-2 py-4 border-black text-white">Payment Authority</th>
+                                <th className="px-2 py-4 border-black text-white">PAO</th> */}
                                 <th className="px-2 py-4 border-b-black text-white rounded-tr-2xl">Quick Facts</th>
                             </tr>
                         </thead>
@@ -262,12 +415,25 @@ export default function ProcurementsScreen() {
                                     return (
                                         <tr key={index}>
                                             <td className={"border border-gray-200 px-1 py-1" + (index === procurementDataFiltered.length - 1 ? "border-separate rounded-bl-2xl" : "")}>{procurement["gemID"] ?? "-"}</td>
-                                            <td className={"border border-gray-200 px-1 py-1"}>{procurement["goodsType"] ?? "-"}</td>
-                                            <td className={"border border-gray-200 px-1 py-1"}>{procurement["goodsQuantity"] ?? "-"}</td>
+                                            <td className={"border border-gray-200 px-1 py-1"}>
+                                                {
+                                                    // date from timestamp
+                                                    new Date(procurement["Created_At"]).toLocaleDateString("en-IN", {
+                                                        day: "numeric",
+                                                        month: "short",
+                                                        year: "numeric",
+                                                    }) ?? "-"
+                                                }
+                                            </td>
+                                            <td className={"border border-gray-200 px-1 py-1"}>{procurement["goodsType"] ?? "-"} {` | ${procurement["goodsQuantity"] ?? "-"}`}</td>
                                             <td className={"border border-gray-200 px-1 py-1"}><div className="flex flex-wrap">
                                                 {
-                                                    procurement["vendorSelection"] === "bidding" ? (<div className="bg-yellow-100 rounded-xl p-2 m-1 w-fit text-[#544a15]">Bidding</div>) :
-                                                        procurement["vendorSelection"] === "reverse-auction" ? <div className="bg-purple-100 rounded-xl p-2 m-1 w-fit text-[#1d0e3a]">PRC Done. Waiting for CRAC.</div> :
+                                                    procurement["vendorSelection"] === "bidding" ? (
+                                                        <div className="bg-yellow-100 rounded-xl p-2 m-1 w-fit text-[#544a15]">Bidding</div>
+                                                    ) :
+                                                        procurement["vendorSelection"] === "reverse-auction" ? (
+                                                            <div className="bg-purple-100 rounded-xl p-2 m-1 w-fit text-[#1d0e3a]">Reverse Auction</div>
+                                                        ) :
                                                             procurement["vendorSelection"] === "direct-purchase" ? <div className="bg-pink-100 rounded-xl p-2 m-1 w-fit text-[#461348]">Direct Purchase</div> : <div className="bg-red-100 rounded-xl p-2 m-1 w-fit text-[#461348]">Unknown</div>
                                                 }
                                             </div>
@@ -280,16 +446,132 @@ export default function ProcurementsScreen() {
                                             <td className={"border border-gray-200 px-1 py-1"}>
                                                 <div className="flex flex-wrap">
                                                     {
-                                                        procurement["Status"] === "0" ? (<div className="bg-yellow-100 rounded-xl p-2 m-1 w-fit text-[#544a15]">Waiting for PRC</div>) :
-                                                            procurement["Status"] === "1" ? <div className="bg-purple-100 rounded-xl p-2 m-1 w-fit text-[#1d0e3a]">PRC Done.</div> :
-                                                                procurement["Status"] === "2" ? <div className="bg-pink-100 rounded-xl p-2 m-1 w-fit text-[#461348]">CRAC Done</div> :
-                                                                    procurement["Status"] === "3" ? <div className="bg-green-100 rounded-xl p-2 m-1 w-fit text-[#21430e]">Completed</div> : <div className="bg-red-100 rounded-xl p-2 m-1 w-fit text-[#320f0f]">Cancelled</div>
+                                                        procurement["Status"] === "0" ? (
+                                                            <div className="flex flex-wrap">
+                                                                <Tooltip
+                                                                    className="bg-blue-gray-800 bg-opacity-80 rounded-xl p-2 m-1 w-fit backdrop-blur-2xl"
+                                                                    content={
+                                                                        <div>
+                                                                            <Typography
+                                                                                variant="small"
+                                                                                color="white"
+                                                                                className="font-bold opacity-80"
+                                                                            >
+                                                                                Buyer: {procurement["Buyer"] ?? "-"}
+                                                                            </Typography>
+                                                                        </div>
+                                                                    }>
+                                                                    <div className="bg-yellow-100 rounded-xl p-2 m-1 w-fit text-[#544a15]">Waiting for PRC</div></Tooltip>
+                                                                <button onClick={
+                                                                    () => {
+                                                                        setUploadType('0');
+                                                                        setSelectedProcurement(procurement["procurementID"]);
+                                                                        openUploadModal();
+                                                                    }
+                                                                } className="bg-yellow-100 rounded-xl p-2 m-1 w-fit text-[#544a15] cursor-pointer items-center align-middle flex flex-row">
+                                                                    <i className="material-icons">upload_file</i>
+                                                                    {"Upload PRC"}
+                                                                </button>
+                                                            </div>
+                                                        ) :
+                                                            procurement["Status"] === "1" ? (
+                                                                <div className="flex flex-wrap">
+                                                                    <Tooltip
+                                                                        className="bg-blue-gray-800 bg-opacity-80 rounded-xl p-2 m-1 w-fit backdrop-blur-2xl"
+                                                                        content={
+                                                                            <div>
+                                                                                <Typography
+                                                                                    variant="small"
+                                                                                    color="white"
+                                                                                    className="font-bold opacity-80"
+                                                                                >
+                                                                                    Buyer: {procurement["Buyer"] ?? "-"}
+                                                                                </Typography>
+                                                                                <Typography
+                                                                                    variant="small"
+                                                                                    color="white"
+                                                                                    className="font-bold opacity-80"
+                                                                                >
+                                                                                    Consignee: {procurement["Consignee"] ?? "-"}
+                                                                                </Typography>
+                                                                            </div>
+                                                                        }>
+                                                                        <div className="bg-purple-100 rounded-xl p-2 m-1 w-fit text-[#1d0e3a]">Waiting for CRAC</div>
+                                                                    </Tooltip>
+                                                                    <button onClick={
+                                                                        () => {
+                                                                            setUploadType('1');
+                                                                            setSelectedProcurement(procurement["procurementID"]);
+                                                                            openUploadModal();
+                                                                        }
+                                                                    } className="bg-purple-100 rounded-xl p-2 m-1 w-fit text-[#1d0e3a] cursor-pointer items-center align-middle flex flex-row">
+                                                                        <i className="material-icons">upload_file</i>
+                                                                        {"Upload CRAC"}
+                                                                    </button>
+                                                                </div>
+
+                                                            ) :
+                                                                procurement["Status"] === "2" ? (
+                                                                    <Tooltip
+                                                                        className="bg-blue-gray-800 bg-opacity-80 rounded-xl p-2 m-1 w-fit backdrop-blur-2xl"
+                                                                        content={
+                                                                            <div>
+                                                                                <Typography
+                                                                                    variant="small"
+                                                                                    color="white"
+                                                                                    className="font-bold opacity-80"
+                                                                                >
+                                                                                    Buyer: {procurement["Buyer"] ?? "-"}
+                                                                                </Typography>
+                                                                                <Typography
+                                                                                    variant="small"
+                                                                                    color="white"
+                                                                                    className="font-bold opacity-80"
+                                                                                >
+                                                                                    Consignee: {procurement["Consignee"] ?? "-"}
+                                                                                </Typography>
+                                                                            </div>
+                                                                        }><div className="bg-pink-100 rounded-xl p-2 m-1 w-fit text-[#461348]">CRAC Done</div></Tooltip>
+                                                                ) :
+                                                                    procurement["Status"] === "3" ? (
+                                                                        <Tooltip
+                                                                            className="bg-blue-gray-800 bg-opacity-80 rounded-xl p-2 m-1 w-fit backdrop-blur-2xl"
+                                                                            content={
+                                                                                <div>
+                                                                                    <Typography
+                                                                                        variant="small"
+                                                                                        color="white"
+                                                                                        className="font-bold opacity-80"
+                                                                                    >
+                                                                                        Buyer: {procurement["Buyer"] ?? "-"}
+                                                                                    </Typography>
+                                                                                    <Typography
+                                                                                        variant="small"
+                                                                                        color="white"
+                                                                                        className="font-bold opacity-80"
+                                                                                    >
+                                                                                        Consignee: {procurement["Consignee"] ?? "-"}
+                                                                                    </Typography>
+                                                                                    <Typography
+                                                                                        variant="small"
+                                                                                        color="white"
+                                                                                        className="font-bold opacity-80"
+                                                                                    >
+                                                                                        Payment Authority: {procurement["Payment_Authority"] ?? "-"}
+                                                                                    </Typography>
+                                                                                </div>
+                                                                            }>
+                                                                            <div className="bg-green-100 rounded-xl p-2 m-1 w-fit text-[#21430e]">Completed</div>
+                                                                        </Tooltip>
+                                                                    ) : <div className="bg-red-100 rounded-xl p-2 m-1 w-fit text-[#320f0f]">Cancelled</div>
                                                     }
                                                 </div>
-                                            </td>
-                                            <td className={"border border-gray-200 px-1 py-1"}>{procurement["Buyer"] ?? "-"}</td>
+                                                {
+                                                    /*<td className={"border border-gray-200 px-1 py-1"}>{procurement["Buyer"] ?? "-"}</td>
                                             <td className={"border border-gray-200 px-1 py-1"}>{procurement["Consignee"] ?? "-"}</td>
-                                            <td className={"border border-gray-200 px-1 py-1"}>{procurement["Payment_Authority"] ?? "-"}</td>
+                                            <td className={"border border-gray-200 px-1 py-1"}>{procurement["Payment_Authority"] ?? "-"}</td> */
+                                                }
+                                            </td>
                                             <td className={"border border-gray-200 px-1 py-1 flex flex-wrap" + (index === procurementDataFiltered.length - 1 ? " border-separate rounded-br-2xl" : "")}>
                                                 {procurement["msme"] === "1" ? (
                                                     <div className="bg-yellow-100 rounded-xl p-2 m-1 w-fit text-[#544a15]">MSME</div>
@@ -311,6 +593,22 @@ export default function ProcurementsScreen() {
                         </tbody>
                     </table>
                 </div>
+
+                <DialogScreen
+                    isOpen={isOpen}
+                    closeModal={closeModal}
+                    title={title}
+                    message={message}
+                    buttonText={buttonText}
+                    type={type}
+                />
+
+                <UploadFileComponents
+                    modalTitle={"Upload Certificate"}
+                    isOpen={uploadModalIsOpen}
+                    closeModal={closeUploadModal}
+                    onUploadFunction={uploadType === '0' ? uploadPRC : uploadCRAC}
+                />
             </main>}
     </>
 }
