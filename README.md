@@ -8,3 +8,7 @@ This is for Smart India Hackathon 2023.
 npm install
 npm run dev
 ```
+
+## Note
+
+> Please don't directly push any code to the repo. Open a PR instead.
