@@ -44,3 +44,5 @@ export const CREATE_PROCUREMENT_URL = `${BASE_URL}/createProcurement`;
 export const NEW_VENDOR_URL = `${BASE_URL}/newVendor`;
 export const UPLOAD_PRC_URL = `${BASE_URL}/uploadPRC`;
 export const UPLOAD_CRAC_URL = `${BASE_URL}/uploadCRAC`;
+export const UPLOADS_URL = `${BASE_URL.slice(0, -4)}/uploads`;
+export const UPDATE_PAYMENT_URL = `${BASE_URL}/updatePaymentDetails`;
