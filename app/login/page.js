@@ -155,10 +155,6 @@ export default function LoginScreen() {
                                 <Link href={"/"} className="bg-[#000000] text-[#ffffff] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-[#3b3b3b] ">
                                     <span className="material-icons">home</span>
                                 </Link>
-                                <Link href={"/register"} className="bg-[#000000] text-[#ffffff] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-[#3b3b3b] ">
-                                    <span className="material-icons mr-2">app_registration</span>
-                                    {"I am an MSME"}
-                                </Link>
                             </div>
                         </nav>
                     </header>
@@ -224,11 +220,11 @@ export default function LoginScreen() {
                         {"Don't have an account? "}
                         <Link className="font-semibold leading-6 text-blue-600 hover:underline" href="/register">Register</Link>
                     </p> */}
-
+{/* 
                                 <p className="mt-10 text-center text-md text-gray-500">
                                     {"Don't have an account? "}
                                     <Link className="font-medium leading-6 text-blue-600 hover:underline" href="/register">Register</Link>
-                                </p>
+                                </p> */}
 
                                 <div>
                                     <input

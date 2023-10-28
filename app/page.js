@@ -66,10 +66,6 @@ export default function HomeScreen() {
                   <span className="material-icons mr-2">login</span>
                   {"Sign In"}
                 </Link>
-                <Link href="/register" className="text-lg font-semibold text-gray-900 items-center align-middle flex flex-row  border border-gray-400 px-2 py-1 rounded-lg hover:bg-gray-100">
-                  <span className="material-icons mr-2">app_registration</span>
-                  I am an MSE
-                </Link>
               </div>
             </div>
           </div>
