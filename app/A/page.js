@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
-import { NEW_VENDOR_URL } from "../utils/constants";
+import { NEW_VENDOR_URL, REGISTER_OFFICIAL_URL } from "../utils/constants";
 import { useRouter } from "next/navigation";
 import 'material-icons/iconfont/material-icons.css';
 import Aos from "aos";
@@ -189,6 +189,100 @@ export default function AdminDashboardScreen() {
         }
     };
 
+
+    const [newOfficialName, setNewOfficialName] = useState('');
+    const [newOfficialEmail, setNewOfficialEmail] = useState('');
+    const [newOfficialRole, setNewOfficialRole] = useState(null);
+    const [roleOptions, setRoleOptions] = useState(["Admin", "Buyer", "Consignee", "Payment Authority", "Vendor"])
+
+    const isValidOfficialName = newOfficialName.length > 0;
+    const emailREgeX = new RegExp(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/);
+    const isValidOfficialEmail = emailREgeX.test(newOfficialEmail);
+    const isValidOfficialRole = newOfficialRole !== null;
+
+
+    const [newOfficialModalIsOpen, setNewOfficialModalIsOpen] = useState(false);
+    function closeNewOfficialModal() {
+        setNewOfficialModalIsOpen(false);
+    }
+
+    function openNewOfficialModal() {
+        setNewOfficialModalIsOpen(true);
+    }
+
+    const handleNewOfficial = (e) => {
+        e.preventDefault();
+
+        fetch(REGISTER_OFFICIAL_URL, {
+            method: 'POST',
+            headers: {
+                "content-type": "application/json",
+                "Authorization": `Bearer ${secureLocalStorage.getItem('jaiGanesh')}`
+            },
+            body: JSON.stringify({
+                "officialEmail": newOfficialEmail,
+                "officialName": newOfficialName,
+                "officialRole": roleOptions.indexOf(newOfficialRole).toString()
+            })
+        }).then((res) => {
+            if (res.status === 200) {
+                res.json().then((data) => {
+                    setTitle('Success');
+                    setMessage(data["message"]);
+                    setButtonText('Okay');
+                    setType('1');
+                    openModal();
+                })
+            } else if (res.status === 401) {
+                secureLocalStorage.clear();
+                setTitle('Unauthorized');
+                setMessage('Session expired. Please login again!');
+                setButtonText('Okay');
+                setType('0');
+                openModal();
+
+                setTimeout(() => {
+                    router.replace('/login');
+                }, 3000);
+            } else if (res.status === 500) {
+                setTitle('Oops');
+                setMessage('Something went wrong! Please try again later!');
+                setButtonText('Okay');
+                setType('0');
+                openModal();
+            } else if (res.status === 400) {
+                res.json().then((data) => {
+                    setTitle('Oops');
+                    if (data["message"] !== null) {
+                        setMessage(data["message"]);
+                    } else {
+                        setMessage('Something went wrong! Please try again later!');
+                    }
+                    setButtonText('Okay');
+                    setType('0');
+                    openModal();
+                })
+            } else {
+                setTitle('Oops');
+                setMessage('Something went wrong! Please try again later!');
+                setButtonText('Okay');
+                setType('0');
+                openModal();
+            }
+        }).catch((err) => {
+            setTitle('Oops');
+            setMessage('Something went wrong! Please try again later!');
+            setButtonText('Okay');
+            setType('0');
+            openModal();
+        }).finally(() => {
+            setNewOfficialName('');
+            setNewOfficialEmail('');
+            setNewOfficialRole(null);
+            closeNewOfficialModal();
+        });
+    }
+
     return (
         <>
             {isLoading ?
@@ -272,13 +366,15 @@ export default function AdminDashboardScreen() {
                                     <h1 className="px-4 pt-2 text-[#21430e] text-center text-xl">Officials</h1>
                                     <hr className="w-full border-[#21430e] my-2" />
                                     <div className="px-4 py-4 flex flex-wrap space-x-2 justify-center items-center">
-                                        <Link className="hover:cursor-pointer" href="/A">
+                                        <Link className="hover:cursor-pointer" href="/A/officials">
                                             <button className="bg-green-50 text-[#21430e] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-opacity-80">
                                                 <span className="material-icons mr-2">manage_accounts</span>
                                                 {"All Officials"}
                                             </button>
                                         </Link>
-                                        <button>
+                                        <button onClick={() => {
+                                            openNewOfficialModal();
+                                        }}>
                                             <div className="bg-green-50 text-[#21430e] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-opacity-80">
                                                 <span className="material-icons">add</span>
                                             </div>
@@ -320,6 +416,103 @@ export default function AdminDashboardScreen() {
                 buttonText={buttonText}
                 type={type}
             />
+
+            <Transition appear show={newOfficialModalIsOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={closeNewOfficialModal}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                    <Dialog.Title
+                                        as="h3"
+                                        className="text-lg font-medium leading-6 text-gray-900"
+                                    >
+                                        Register New Official
+                                    </Dialog.Title>
+                                    <form onSubmit={handleNewOfficial}>
+                                        <div className="mt-2">
+                                            <div className="space-y-6">
+                                                <div>
+                                                    <label className="block text-md font-medium leading-6 text-black">
+                                                        Email ID
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="email"
+                                                            placeholder='Enter Official Email ID'
+                                                            onChange={(e) => {
+                                                                setNewOfficialEmail(e.target.value);
+                                                            }}
+                                                            className={"block text-lg w-full rounded-md py-2 px-2 text-black shadow-sm ring-1 ring-inset ring-bGray placeholder:text-gray-400 sm:text-md sm:leading-6 !outline-none" +
+                                                                (!isValidOfficialEmail && newOfficialEmail ? ' ring-red-500' : isValidOfficialEmail && newOfficialEmail ? ' ring-green-500' : ' ring-bGray')}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-md font-medium leading-6 text-black">
+                                                        Full Name
+                                                    </label>
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            placeholder='Enter Official Name'
+                                                            onChange={(e) => {
+                                                                setNewOfficialName(e.target.value);
+                                                            }}
+                                                            className={"block text-lg w-full rounded-md py-2 px-2 text-black shadow-sm ring-1 ring-inset ring-bGray placeholder:text-gray-400 sm:text-md sm:leading-6 !outline-none" +
+                                                                (!isValidOfficialName && newOfficialName ? ' ring-red-500' : isValidOfficialName && newOfficialName ? ' ring-green-500' : ' ring-bGray')}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="border p-2 rounded-lg">
+                                                    <SelectButton value={newOfficialRole} onChange={(e) => {
+                                                        setNewOfficialRole(e.value || '');
+                                                    }} options={roleOptions} required />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-4 flex justify-center items-center">
+                                            <input
+                                                value={"Register Official"}
+                                                type="submit"
+                                                disabled={!(isValidOfficialName && isValidOfficialEmail && isValidOfficialRole)}
+                                                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-900"
+                                                onClick={closeNewOfficialModal}
+                                            />
+                                        </div>
+                                    </form>
+
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
 
             <Transition appear show={newVendorIsOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={closeNewVendorModal}>

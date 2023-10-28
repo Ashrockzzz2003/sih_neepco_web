@@ -46,3 +46,5 @@ export const UPLOAD_PRC_URL = `${BASE_URL}/uploadPRC`;
 export const UPLOAD_CRAC_URL = `${BASE_URL}/uploadCRAC`;
 export const UPLOADS_URL = `${BASE_URL.slice(0, -4)}/uploads`;
 export const UPDATE_PAYMENT_URL = `${BASE_URL}/updatePaymentDetails`;
+export const GET_OFFICIALS_URL = `${BASE_URL}/getRegisteredOfficials`;
+export const REGISTER_OFFICIAL_URL = `${BASE_URL}/registerOfficial`;

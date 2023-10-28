@@ -19,7 +19,7 @@ export default function LoginScreen() {
     const emailRegex = new RegExp('^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$');
 
     const isValidEmail = emailRegex.test(userEmail);
-    const isValidPassword = userPassword.length > 8;
+    const isValidPassword = userPassword.length >= 8;
 
     const [isLoading, setIsLoading] = useState(false);
 
