@@ -63,7 +63,7 @@ export default function LoginScreen() {
             });
 
             const data = await response.json();
-            
+
             if (response.status === 200) {
                 setTitle('Success');
                 setMessage('Login Successful! Click Okay to continue.');
@@ -155,9 +155,13 @@ export default function LoginScreen() {
                                     <Image src="/logo.png" alt="NEEPCO logo" width={72} height={72} className='ml-auto mr-auto my-4' />
                                 </Link>
                             </div>
-                            <div className="lg:flex lg:flex-1 lg:justify-end">
+                            <div className="lg:flex lg:flex-1 lg:justify-end space-x-1">
+                                <Link href={"/"} className="bg-[#000000] text-[#ffffff] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-[#3b3b3b] ">
+                                    <span className="material-icons">home</span>
+                                </Link>
                                 <Link href={"/register"} className="bg-[#000000] text-[#ffffff] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-[#3b3b3b] ">
-                                    <span className="material-icons">app_registration</span>
+                                    <span className="material-icons mr-2">app_registration</span>
+                                    {"I am an MSME"}
                                 </Link>
                             </div>
                         </nav>
@@ -243,7 +247,7 @@ export default function LoginScreen() {
                 </div>
             }
 
-            <DialogScreen 
+            <DialogScreen
                 isOpen={isOpen}
                 closeModal={closeModal}
                 title={title}

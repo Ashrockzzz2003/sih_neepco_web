@@ -40,6 +40,7 @@ export const LOGIN_URL = `${BASE_URL}/login`;
 export const REGISTER_URL = `${BASE_URL}/register`;
 export const All_PROCUREMENTS_URL = `${BASE_URL}/getAllProcurements`;
 export const ALL_VENDOR_URL = `${BASE_URL}/getVendors`;
+export const VENDOR_ALL_URL = `${BASE_URL}/allVendors`;
 export const CREATE_PROCUREMENT_URL = `${BASE_URL}/createProcurement`;
 export const NEW_VENDOR_URL = `${BASE_URL}/newVendor`;
 export const UPLOAD_PRC_URL = `${BASE_URL}/uploadPRC`;

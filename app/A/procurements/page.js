@@ -552,22 +552,22 @@ export default function ProcurementsScreen() {
 
                             <div className="flex flex-wrap border-t border-bGray justify-center items-center xl:flex-row space-x-2 space-y-2 p-4">
                                 <div className="border p-4 rounded-md">
-                                    <SelectButton value={vendorSelection} onChange={(e) => {
+                                    <SelectButton className="block" value={vendorSelection} onChange={(e) => {
                                         setVendorSelection(e.value || '');
                                     }} options={vendorSelectionOptions} required />
                                 </div>
                                 <div className="border p-4 rounded-md">
-                                    <SelectButton value={isMSME} onChange={(e) => {
+                                    <SelectButton className="block" value={isMSME} onChange={(e) => {
                                         setIsMSME(e.value || '');
                                     }} options={msmeOptions} required />
                                 </div>
                                 <div className="border p-4 rounded-md">
-                                    <SelectButton value={isWomenOwned} onChange={(e) => {
+                                    <SelectButton className="block" value={isWomenOwned} onChange={(e) => {
                                         setIsWomenOwned(e.value || '');
                                     }} options={womenOwnedOptions} required />
                                 </div>
                                 <div className="border p-4 rounded-md">
-                                    <SelectButton value={isSCST} onChange={(e) => {
+                                    <SelectButton className="block" value={isSCST} onChange={(e) => {
                                         setIsSCST(e.value || '');
                                     }} options={scstOptions} required />
                                 </div>
@@ -576,7 +576,7 @@ export default function ProcurementsScreen() {
 
                         <div className="flex flex-row flex-wrap justify-center items-center p-4">
                             <div className="border p-4 py-8 rounded-md">
-                                <SelectButton value={status} onChange={(e) => {
+                                <SelectButton className="block" value={status} onChange={(e) => {
                                     setStatus(e.value || '');
                                 }} options={statusOptions} required />
                             </div>
@@ -984,7 +984,7 @@ export default function ProcurementsScreen() {
                                                     </div>
 
                                                     <div className="border p-2 rounded-lg">
-                                                        <SelectButton value={paymentMode} onChange={(e) => {
+                                                        <SelectButton className="block" value={paymentMode} onChange={(e) => {
                                                             setPaymentMode(e.value || '');
                                                         }} options={paymentModeOptions} required />
                                                     </div>

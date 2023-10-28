@@ -83,9 +83,9 @@ export default function AdminDashboardScreen() {
     const emailRegex = new RegExp(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/);
     const isValidEmail = emailRegex.test(vendorEmail);
 
-    const isValidMSME = isMSME.length > 0 && msmeOptions.includes(isMSME);
-    const isValidWomenOwned = isWomenOwned.length > 0 && womenOwnedOptions.includes(isWomenOwned);
-    const isValidSCST = isSCST.length > 0 && scstOptions.includes(isSCST);
+    const isValidMSME = isMSME !== null && isMSME.length > 0 && msmeOptions.includes(isMSME);
+    const isValidWomenOwned = isWomenOwned !== null && isWomenOwned.length > 0 && womenOwnedOptions.includes(isWomenOwned);
+    const isValidSCST = isSCST !== null && isSCST.length > 0 && scstOptions.includes(isSCST);
 
     const [newVendorIsOpen, setNewVendorIsOpen] = useState(false);
     function closeNewVendorModal() {
@@ -106,14 +106,6 @@ export default function AdminDashboardScreen() {
             openModal();
         }
 
-        if (userAccess === null || userAccess === undefined) {
-            alertError("Session Expired", "Please login again to continue.");
-            secureLocalStorage.clear();
-            setTimeout(() => {
-                router.replace("/login");
-            }, 3000);
-            return;
-        }
 
         try {
             const response = await fetch(NEW_VENDOR_URL, {
@@ -140,6 +132,10 @@ export default function AdminDashboardScreen() {
                     setButtonText('Okay');
                     setType('1');
                     openModal();
+
+                    setTimeout(() => {
+                        router.replace('/A/vendor');
+                    }, 3000);
                 }
             }
             else if (response.status === 401) {
@@ -387,7 +383,7 @@ export default function AdminDashboardScreen() {
                                     <h1 className="px-4 pt-2 text-[#403914] text-center text-xl">Vendors</h1>
                                     <hr className="w-full border-[#544a15] my-2" />
                                     <div className="px-4 py-4 flex flex-wrap space-x-2 justify-center items-center">
-                                        <Link className="hover:cursor-pointer" href="/A">
+                                        <Link className="hover:cursor-pointer" href="/A/vendor">
                                             <button className="bg-yellow-100 text-[#544a15] rounded-xl p-2 items-center align-middle flex flex-row hover:bg-opacity-80">
                                                 <span className="material-icons mr-2">badge</span>
                                                 {"All Vendors"}
@@ -489,7 +485,7 @@ export default function AdminDashboardScreen() {
                                                 </div>
 
                                                 <div className="border p-2 rounded-lg">
-                                                    <SelectButton value={newOfficialRole} onChange={(e) => {
+                                                    <SelectButton className="block" value={newOfficialRole} onChange={(e) => {
                                                         setNewOfficialRole(e.value || '');
                                                     }} options={roleOptions} required />
                                                 </div>
@@ -586,19 +582,19 @@ export default function AdminDashboardScreen() {
                                                 </div>
 
                                                 <div className="border p-2 rounded-lg">
-                                                    <SelectButton value={isMSME} onChange={(e) => {
+                                                    <SelectButton className="block" value={isMSME} onChange={(e) => {
                                                         setIsMSME(e.value || '');
                                                     }} options={msmeOptions} required />
                                                 </div>
 
                                                 <div className="border p-2 rounded-lg">
-                                                    <SelectButton value={isWomenOwned} onChange={(e) => {
+                                                    <SelectButton className="block" value={isWomenOwned} onChange={(e) => {
                                                         setIsWomenOwned(e.value || '');
                                                     }} options={womenOwnedOptions} required />
                                                 </div>
 
                                                 <div className="border p-2 rounded-lg">
-                                                    <SelectButton value={isSCST} onChange={(e) => {
+                                                    <SelectButton className="block" value={isSCST} onChange={(e) => {
                                                         setIsSCST(e.value || '');
                                                     }} options={scstOptions} required />
                                                 </div>

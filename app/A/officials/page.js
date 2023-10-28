@@ -245,9 +245,11 @@ export default function OfficialsScreen() {
                             (value) => setSearchText(value)
                         } placeholderText={"Manager Name or Email or ID"} />
 
+                        <hr className="w-full" />
+
                         <SelectButton value={role} onChange={(e) => {
                             setRole(e.value);
-                        }} options={roleOptions} className="p-4 flex" />
+                        }} options={roleOptions} className="flex border rounded-lg m-4" />
                     </div>
                 </div>
 
@@ -376,7 +378,7 @@ export default function OfficialsScreen() {
                                                     </div>
 
                                                     <div className="border p-2 rounded-lg">
-                                                        <SelectButton value={newOfficialRole} onChange={(e) => {
+                                                        <SelectButton className="block" value={newOfficialRole} onChange={(e) => {
                                                             setNewOfficialRole(e.value || '');
                                                         }} options={roleOptions} required />
                                                     </div>
