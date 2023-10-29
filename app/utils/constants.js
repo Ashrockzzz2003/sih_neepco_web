@@ -35,6 +35,7 @@ export function RoleToRoleID(role) {
     }
 }
 
+// const BASE_URL = 'http://ptapi.southindia.cloudapp.azure.com:5000/api';
 const BASE_URL = 'http://localhost:5000/api';
 export const LOGIN_URL = `${BASE_URL}/login`;
 export const REGISTER_URL = `${BASE_URL}/register`;
