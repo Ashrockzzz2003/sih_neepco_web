@@ -95,6 +95,15 @@ export default function LoginScreen() {
                         // PAYMENT AUTHORITY
                         router.replace('/P');
                         break;
+                    case 4:
+                        // Vendor
+                        secureLocalStorage.setItem('vendorID', data['vendorID']);
+                        secureLocalStorage.setItem('vendorOrganization', data['vendorOrganization']);
+                        secureLocalStorage.setItem('msme', data['msme']);
+                        secureLocalStorage.setItem('womenOwned', data['womenOwned']);
+                        secureLocalStorage.setItem('scst', data['scst']);
+                        router.replace('/V');
+                        break;
                     default:
                         break;
                 }

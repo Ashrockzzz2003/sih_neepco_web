@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
-import { NEW_VENDOR_URL, REGISTER_OFFICIAL_URL } from "../utils/constants";
+import { NEW_VENDOR_URL } from "../utils/constants";
 import { useRouter } from "next/navigation";
 import 'material-icons/iconfont/material-icons.css';
 import Aos from "aos";
