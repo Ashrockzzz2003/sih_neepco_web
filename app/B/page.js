@@ -134,7 +134,7 @@ export default function BuyerDashboardScreen() {
                     openModal();
 
                     setTimeout(() => {
-                        router.replace('/A/vendor');
+                        router.replace('/B/vendor');
                     }, 3000);
                 }
             }
