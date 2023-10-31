@@ -11,6 +11,7 @@ import { LoadingScreen } from '../utils/LoadingScreen';
 import { LOGIN_URL, RoleToRoleID } from '../utils/constants';
 import secureLocalStorage from 'react-secure-storage';
 import { useRouter } from 'next/navigation';
+import sha256 from 'crypto-js/sha256';
 
 export default function LoginScreen() {
     const [userEmail, setUserEmail] = useState('');
@@ -58,7 +59,7 @@ export default function LoginScreen() {
                 },
                 body: JSON.stringify({
                     userEmail: userEmail,
-                    userPassword: userPassword
+                    userPassword: sha256(userPassword).toString()
                 })
             });
 
