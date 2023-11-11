@@ -2,6 +2,8 @@
 
 This is for Smart India Hackathon 2023.
 
+Deployed at [`http://abhinavramakrishnan.tech:3000`](http://abhinavramakrishnan.tech:3000)
+
 ## Note
 
 > Please don't directly push any code to the repo. Open a PR instead.
